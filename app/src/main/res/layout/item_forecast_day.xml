@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="80dp"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/rounded_card"
+    android:layout_margin="4dp"
+    android:padding="6dp">
+
+    <TextView
+        android:id="@+id/tvDayName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cmt"
+        android:textColor="@color/text_dark"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_gravity="center" />
+
+    <ImageView
+        android:id="@+id/ivForecastIcon"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="4dp"
+        android:layout_gravity="center"
+        android:contentDescription="Hava durumu ikonu"
+        android:src="@drawable/ic_launcher_foreground" />
+
+    <TextView
+        android:id="@+id/tvForecastTemp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="25° 11°"
+        android:textColor="@color/primary_green"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp"
+        android:layout_gravity="center" />
+
+</LinearLayout> 

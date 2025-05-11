@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "133458103062",
+    "firebase_url": "https://smartirrigationsystem-bfff8-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "smartirrigationsystem-bfff8",
+    "storage_bucket": "smartirrigationsystem-bfff8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:133458103062:android:fe0b02bc3a0cc032cade37",
+        "android_client_info": {
+          "package_name": "com.bilocan.smartirrigationsystem"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvNybSilMh-F8ZNXzvq580mS6cj9hrvek"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <!-- Başlık -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Uyarı"
+        android:textColor="@color/primary_green"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <!-- Mesaj -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="Tüm log kayıtları silinecek. Bu işlem geri alınamaz. Devam etmek istiyor musunuz?"
+        android:textColor="@color/text_dark"
+        android:textSize="16sp" />
+
+    <!-- Butonlar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnIptal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/light_green"
+            android:text="İPTAL"
+            android:textColor="@color/dark_green" />
+
+        <Button
+            android:id="@+id/btnOnayla"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/primary_green"
+            android:text="TEMİZLE"
+            android:textColor="@color/white" />
+    </LinearLayout>
+</LinearLayout> 
