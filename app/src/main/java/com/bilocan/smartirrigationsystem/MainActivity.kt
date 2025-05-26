@@ -610,7 +610,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun fetchForecastWeather() {
         CoroutineScope(Dispatchers.IO).launch {
-            val apiKey = "81f5c8bc3f294729a5d122618251005"
+            val apiKey = "YOUR_WEATHER_API_KEY"
             val city = "Ankara"
             val country = "TR"
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())

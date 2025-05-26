@@ -1,0 +1,177 @@
+#include <WiFi.h>
+#include <Firebase_ESP_Client.h>
+#include "DHT.h"
+
+// WiFi ve Firebase bilgileri
+#define WIFI_SSID "YOUR_WIFI_SSID"
+#define WIFI_PASSWORD "YOUR_WIFI_PASSWORD"
+#define API_KEY "YOUR_FIREBASE_API_KEY"
+#define DATABASE_URL "YOUR_FIREBASE_DATABASE_URL"
+#define USER_EMAIL "YOUR_FIREBASE_USER_EMAIL"
+#define USER_PASSWORD "YOUR_FIREBASE_USER_PASSWORD"
+
+// Donanım bağlantıları
+#define DHT_PIN         26
+#define DHT_TYPE        DHT22
+#define SOIL_DO_PIN     19
+#define SOIL_AO_PIN     34
+#define RAIN_DO_PIN     32
+#define RAIN_AO_PIN     33
+#define FLOW_SENSOR_PIN 21
+#define RELAY_PIN       23 // Röle bağlı (Pompa + Vana)
+
+// Nesneler ve durumlar
+DHT dht(DHT_PIN, DHT_TYPE);
+FirebaseData fbdo;
+FirebaseAuth auth;
+FirebaseConfig config;
+
+volatile int flowPulseCount = 0;
+unsigned long previousMillis = 0;
+const long interval = 5000;
+float totalFlowRate = 0;
+int flowSampleCount = 0;
+
+void IRAM_ATTR countFlowPulse() {
+  flowPulseCount++;
+}
+
+void setup() {
+  Serial.begin(115200);
+  Serial.println("ESP32 Baslatiliyor...");
+
+  pinMode(SOIL_DO_PIN, INPUT);
+  pinMode(RAIN_DO_PIN, INPUT);
+  pinMode(FLOW_SENSOR_PIN, INPUT_PULLUP);
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, HIGH); // Röle aktif düşük: HIGH = Kapalı
+
+  attachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN), countFlowPulse, FALLING);
+  dht.begin();
+
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  Serial.print("WiFi baglaniyor");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\nWiFi baglandi. IP: " + WiFi.localIP().toString());
+
+  config.api_key = API_KEY;
+  config.database_url = DATABASE_URL;
+  auth.user.email = USER_EMAIL;
+  auth.user.password = USER_PASSWORD;
+  Firebase.begin(&config, &auth);
+  Firebase.reconnectWiFi(true);
+}
+
+void loop() {
+  static unsigned long lastFlowMillis = millis();
+  if (millis() - lastFlowMillis >= 1000) {
+    lastFlowMillis = millis();
+    detachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN));
+    int pulseCount = flowPulseCount;
+    flowPulseCount = 0;
+    attachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN), countFlowPulse, FALLING);
+    float flowLperMin = (pulseCount / 450.0) * 60.0;
+    totalFlowRate += flowLperMin;
+    flowSampleCount++;
+  }
+
+  if (millis() - previousMillis >= interval) {
+    previousMillis = millis();
+
+    float avgFlowRate = (flowSampleCount > 0) ? (totalFlowRate / flowSampleCount) : 0;
+    totalFlowRate = 0;
+    flowSampleCount = 0;
+
+    bool isSoilWet = (digitalRead(SOIL_DO_PIN) == 0);
+    bool isRaining = (digitalRead(RAIN_DO_PIN) == 0);
+    int soilAnalog = analogRead(SOIL_AO_PIN);
+    int rainAnalog = analogRead(RAIN_AO_PIN);
+    float temperature = dht.readTemperature();
+    float humidity = dht.readHumidity();
+
+    bool systemActive = true;
+    if (Firebase.RTDB.getBool(&fbdo, "/devices/esp32/status/isActive")) {
+      systemActive = fbdo.boolData();
+      Serial.printf("\n🔄 Sistem aktiflik durumu: %s\n", systemActive ? "Aktif" : "Pasif");
+    } else {
+      Serial.println("⚠️ isActive okunamadi! Varsayilan: true");
+    }
+
+    if (!systemActive) {
+      digitalWrite(RELAY_PIN, HIGH);
+      Firebase.RTDB.setBool(&fbdo, "/devices/esp32/status/systemStatus", false);
+      Serial.println("⛔ Sistem pasif, sulama yapilmiyor.");
+      return;
+    }
+
+    Firebase.RTDB.setBool(&fbdo, "/devices/esp32/status/systemStatus", true);
+
+    // ----- MANUEL veya OTOMATIK kontrol -----
+    bool hasManualCommand = false;
+    bool valveShouldOpen = false;
+
+    if (Firebase.RTDB.getBool(&fbdo, "/control/valve/isOpen")) {
+      hasManualCommand = true;
+      valveShouldOpen = fbdo.boolData();
+      Serial.printf("📲 Mobil komut: vana %s\n", valveShouldOpen ? "ACIK" : "KAPALI");
+
+      if (isRaining && valveShouldOpen) {
+        digitalWrite(RELAY_PIN, HIGH); // Kapat
+        Serial.println("🌧️ Yagmur algilandi! Vana ZORLA kapatildi.");
+        Firebase.RTDB.setBool(&fbdo, "/control/valve/isOpen", false);
+      } else {
+        digitalWrite(RELAY_PIN, valveShouldOpen ? LOW : HIGH);
+        Serial.printf("🔧 Manuel kontrol: Vana %s\n", valveShouldOpen ? "ACIK" : "KAPALI");
+      }
+    }
+
+    if (!hasManualCommand) {
+      Serial.println("⚠️ Mobil komut yok, otomatik moda geciliyor.");
+
+      if (!isSoilWet && !isRaining) {
+        digitalWrite(RELAY_PIN, LOW);   // Aç
+        Serial.println("🚰 Pompa + Vana ACILDI (OTOMATIK)");
+      } else {
+        digitalWrite(RELAY_PIN, HIGH);  // Kapat
+        Serial.println("🚫 Pompa + Vana KAPALI (OTOMATIK)");
+      }
+    }
+
+    Serial.println("------ Sensor Verileri ------");
+    Serial.printf("Toprak (DO): %s | AO: %d\n", isSoilWet ? "Islak" : "Kuru", soilAnalog);
+    Serial.printf("Yagmur (DO): %s | AO: %d\n", isRaining ? "Var" : "Yok", rainAnalog);
+    if (!isnan(temperature) && !isnan(humidity)) {
+      Serial.printf("Sicaklik: %.1f C | Nem: %.1f %%\n", temperature, humidity);
+    } else {
+      Serial.println("⚠️ Sicaklik veya nem verisi okunamadi!");
+    }
+    Serial.printf("💧 Ortalama Akis: %.3f L/dk\n", avgFlowRate);
+    Serial.println("------------------------------");
+
+    FirebaseJson json;
+    if (!isnan(temperature)) json.set("temperature", temperature);
+    if (!isnan(humidity)) json.set("humidity", humidity);
+    json.set("isSoilWet", isSoilWet);
+    json.set("isRaining", isRaining);
+    json.set("soilAnalog", soilAnalog);
+    json.set("rainAnalog", rainAnalog);
+    float filteredFlowRate = (avgFlowRate < 0.03) ? 0.0 : avgFlowRate;
+    json.set("flowRateLpm", filteredFlowRate);
+    json.set("timestamp", millis());
+
+    if (Firebase.RTDB.setJSON(&fbdo, "/sensors", &json)) {
+      Serial.println("✅ Firebase'e veri gonderildi.");
+    } else {
+      Serial.print("❌ Firebase hatasi: ");
+      Serial.println(fbdo.errorReason());
+    }
+
+    FirebaseJson statusUpdate;
+    statusUpdate.set("lastSeen", millis());
+    statusUpdate.set("online", true);
+    Firebase.RTDB.updateNode(&fbdo, "/devices/esp32/status", &statusUpdate);
+  }
+}

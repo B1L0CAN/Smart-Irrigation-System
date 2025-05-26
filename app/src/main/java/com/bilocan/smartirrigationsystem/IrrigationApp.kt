@@ -13,9 +13,9 @@ class IrrigationApp : Application() {
     
     companion object {
         // Firebase Realtime Database URL
-        private const val DB_URL = "https://smartirrigationsystem-bfff8-default-rtdb.europe-west1.firebasedatabase.app"
-        private const val API_KEY = "AIzaSyCjpEjjQ2IODwlb4TCamTdfwpjQuVcQwi8"
-        private const val APP_ID = "1:133458103062:web:4aa31af92bd0105ccade37"
+        private const val DB_URL = "YOUR_FIREBASE_DATABASE_URL"
+        private const val API_KEY = "YOUR_FIREBASE_API_KEY"
+        private const val APP_ID = "YOUR_FIREBASE_APP_ID"
     }
     
     override fun onCreate() {
