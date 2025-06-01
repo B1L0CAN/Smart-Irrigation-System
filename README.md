@@ -1,61 +1,61 @@
 # Smart Irrigation System 🌱
 
-Akıllı sulama sistemi, ESP32 tabanlı bir IoT projesidir. Bu sistem, sensörler aracılığıyla toprak nemi, yağmur durumu ve hava sıcaklığı gibi verileri toplar ve bu verilere göre otomatik sulama yapar.
+Smart Irrigation System is an ESP32-based IoT project. This system collects data through sensors such as soil moisture, rain status, and air temperature, and performs automatic irrigation based on this data.
 
-## 🚀 Özellikler
+## 🚀 Features
 
-- 🌡️ Sıcaklık ve nem sensörü desteği
-- 💧 Toprak nem sensörü
-- 🌧️ Yağmur sensörü
-- 📱 Android uygulaması ile uzaktan kontrol
-- 📊 Gerçek zamanlı veri izleme
-- 📈 Hava durumu entegrasyonu
-- 🔔 Akıllı sulama uyarıları
-- 📝 Detaylı sulama logları
+- 🌡️ Temperature and humidity sensor support
+- 💧 Soil moisture sensor
+- 🌧️ Rain sensor
+- 📱 Remote control with Android application
+- 📊 Real-time data monitoring
+- 📈 Weather integration
+- 🔔 Smart irrigation alerts
+- 📝 Detailed irrigation logs
 
-## 🛠️ Teknolojiler
+## 🛠️ Technologies
 
-- **Donanım:**
+- **Hardware:**
   - ESP32
-  - DHT22 Sıcaklık/Nem Sensörü
-  - Toprak Nem Sensörü
-  - Yağmur Sensörü
-  - Su Akış Sensörü
-  - Röle Modülü
+  - DHT22 Temperature/Humidity Sensor
+  - Soil Moisture Sensor
+  - Rain Sensor
+  - Water Flow Sensor
+  - Relay Module
 
-- **Yazılım:**
+- **Software:**
   - Android Studio
   - Kotlin
   - Firebase Realtime Database
   - WeatherAPI.com
 
-## 📋 Kurulum
+## 📋 Installation
 
-### Gerekli API Anahtarları
+### Required API Keys
 
 1. **WeatherAPI.com**
-   - [WeatherAPI.com](https://www.weatherapi.com/) adresinden ücretsiz hesap oluşturun
-   - API anahtarınızı alın
-   - `MainActivity.kt` dosyasında `YOUR_WEATHER_API_KEY` yerine API anahtarınızı ekleyin
+   - Create a free account at [WeatherAPI.com](https://www.weatherapi.com/)
+   - Get your API key
+   - Replace `YOUR_WEATHER_API_KEY` in `MainActivity.kt` with your API key
 
 2. **Firebase**
-   - [Firebase Console](https://console.firebase.google.com/) adresinden yeni proje oluşturun
-   - Realtime Database'i etkinleştirin
-   - `google-services.json` dosyasını projenize ekleyin
-   - `IrrigationApp.kt` dosyasında aşağıdaki değerleri güncelleyin:
+   - Create a new project at [Firebase Console](https://console.firebase.google.com/)
+   - Enable Realtime Database
+   - Add `google-services.json` to your project
+   - Update the following values in `IrrigationApp.kt`:
      ```kotlin
      private const val DB_URL = "YOUR_FIREBASE_DATABASE_URL"
      private const val API_KEY = "YOUR_FIREBASE_API_KEY"
      private const val APP_ID = "YOUR_FIREBASE_APP_ID"
      ```
 
-### ESP32 Kurulumu
+### ESP32 Setup
 
-1. ESP32 kodunu Arduino IDE'ye yükleyin
-2. Gerekli kütüphaneleri yükleyin:
+1. Load ESP32 code into Arduino IDE
+2. Install required libraries:
    - Firebase ESP Client
    - DHT sensor library
-3. `esp_code.txt` dosyasındaki WiFi ve Firebase bilgilerini güncelleyin:
+3. Update WiFi and Firebase information in `esp_code.txt`:
    ```cpp
    #define WIFI_SSID "YOUR_WIFI_SSID"
    #define WIFI_PASSWORD "YOUR_WIFI_PASSWORD"
@@ -65,39 +65,27 @@ Akıllı sulama sistemi, ESP32 tabanlı bir IoT projesidir. Bu sistem, sensörle
    #define USER_PASSWORD "YOUR_FIREBASE_USER_PASSWORD"
    ```
 
-### Android Uygulaması
+### Android Application
 
-1. Projeyi Android Studio'da açın
-2. Gerekli bağımlılıkları yükleyin
-3. API anahtarlarını güncelleyin
-4. Uygulamayı derleyin ve çalıştırın
+1. Open the project in Android Studio
+2. Install required dependencies
+3. Update API keys
+4. Build and run the application
 
-## 📱 Uygulama Özellikleri
+## 📱 Application Features
 
-- Gerçek zamanlı sensör verilerini görüntüleme
-- Manuel ve otomatik sulama kontrolü
-- Hava durumu tahminleri
-- Detaylı sulama logları
-- Sistem durumu izleme
+- Real-time sensor data monitoring
+- Manual and automatic irrigation control
+- Weather forecasts
+- Detailed irrigation logs
+- System status monitoring
 
-## 🎥 Tanıtım Videosu
+## 🎥 Demo Video
 
-Projenin detaylı tanıtımı ve kullanımı için [YouTube videosunu](https://www.youtube.com/watch?v=HgPWbnkD3RU&t=1s&ab_channel=B1L0) izleyebilirsiniz.
+You can watch the [YouTube video](https://www.youtube.com/watch?v=HgPWbnkD3RU&t=1s&ab_channel=B1L0) for a detailed demonstration and usage of the project.
 
-## 📝 Lisans
+## 📞 Contact
 
-Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına bakın.
+Musa Bilal YAZ - [LinkedIn](https://www.linkedin.com/in/musa-bilal-yaz-515226232/)
 
-## 👥 Katkıda Bulunma
-
-1. Bu depoyu fork edin
-2. Yeni bir özellik dalı oluşturun (`git checkout -b feature/amazing-feature`)
-3. Değişikliklerinizi commit edin (`git commit -m 'Add some amazing feature'`)
-4. Dalınıza push edin (`git push origin feature/amazing-feature`)
-5. Bir Pull Request oluşturun
-
-## 📞 İletişim
-
-B1L0CAN - [@B1L0CAN](https://github.com/B1L0CAN)
-
-Proje Linki: [https://github.com/B1L0CAN/Smart-Irrigation-System](https://github.com/B1L0CAN/Smart-Irrigation-System) 
+Project Link: [https://github.com/B1L0CAN/Smart-Irrigation-System](https://github.com/B1L0CAN/Smart-Irrigation-System) 
